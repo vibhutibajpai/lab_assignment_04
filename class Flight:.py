@@ -1,62 +1,87 @@
-flight_data = {
-    "AI161E90": ("BLR", "BOM", 5600),
-    "BR161F91": ("BOM", "BBI", 6750),
-    "AI161F99": ("BBI", "BLR", 8210),
-    "VS171E20": ("JLR", "BBI", 5500),
-    "AS171G30": ("HYD", "JLR", 4400),
-    "AI131F49": ("HYD", "BOM", 3499)
-}
+class Flight:
+    def __init__(self, flight_id, source, destination, price):
+        self.flight_id = flight_id
+        self.source = source
+        self.destination = destination
+        self.price = price
 
-city_codes = {
-    "BLR": "Bengaluru",
-    "BOM": "Mumbai",
-    "BBI": "Bhubaneswar",
-    "HYD": "Hyderabad",
-    "JLR": "Jabalpur"
-}
+class FlightTable:
+    def __init__(self):
+        self.flights = []
 
-def get_flight_details(flight_id=None, source_city=None, dest_city=None):
-    if flight_id:
-        if flight_id in flight_data:
-            source, dest, price = flight_data[flight_id]
-            print(f"Flight ID: {flight_id}")
-            print(f"Source: {city_codes[source]}")
-            print(f"Destination: {city_codes[dest]}")
-            print(f"Price: {price}")
-        else:
-            print("Flight not found.")
-    elif source_city:
-        matching_flights = [(fid, source, dest, price) for fid, (source, dest, price) in flight_data.items() if source == source_city]
-        if matching_flights:
-            print("Flights from", city_codes[source_city])
-            for fid, source, dest, price in matching_flights:
-                print(f"Flight ID: {fid}")
-                print(f"Destination: {city_codes[dest]}")
-                print(f"Price: {price}")
-        else:
-            print("No flights found from", city_codes[source_city])
-    elif dest_city:
-        matching_flights = [(fid, source, dest, price) for fid, (source, dest, price) in flight_data.items() if dest == dest_city]
-        if matching_flights:
-            print("Flights to", city_codes[dest_city])
-            for fid, source, dest, price in matching_flights:
-                print(f"Flight ID: {fid}")
-                print(f"Source: {city_codes[source]}")
-                print(f"Price: {price}")
-        else:
-            print("No flights found to", city_codes[dest_city])
-    else:
-        print("Please provide valid input.")
+    def add_flight(self, flight):
+        self.flights.append(flight)
 
-user_input_type = int(input("Enter 1 for Flight ID, 2 for source city, or 3 for destination city: "))
-if user_input_type == 1:
-    flight_id = input("Enter Flight ID: ")
-    get_flight_details(flight_id=flight_id)
-elif user_input_type == 2:
-    source_city = input("Enter source city: ")
-    get_flight_details(source_city=source_city)
-elif user_input_type == 3:
-    dest_city = input("Enter destination city: ")
-    get_flight_details(dest_city=dest_city)
-else:
-    print("Invalid input type.")
+    def search_by_id(self, flight_id):
+        for flight in self.flights:
+            if flight.flight_id == flight_id:
+                return flight
+        return None
+
+    def search_by_source(self, source):
+        result = []
+        for flight in self.flights:
+            if flight.source == source:
+                result.append(flight)
+        return result
+
+    def search_by_destination(self, destination):
+        result = []
+        for flight in self.flights:
+            if flight.destination == destination:
+                result.append(flight)
+        return result
+
+def main():
+    flight_table = FlightTable()
+    flight_table.add_flight(Flight("AI161E90", "BLR", "BOM", 5600))
+    flight_table.add_flight(Flight("BR161F91", "BOM", "BBI", 6750))
+    flight_table.add_flight(Flight("AI161F99", "BBI", "BLR", 8210))
+    flight_table.add_flight(Flight("VS171E20", "JLR", "BBI", 5500))
+    flight_table.add_flight(Flight("AS171G30", "HYD", "JLR", 4400))
+    flight_table.add_flight(Flight("AI131F49", "HYD", "BOM", 3499))
+
+    while True:
+        print("1. Search by Flight ID")
+        print("2. Search by Source City")
+        print("3. Search by Destination City")
+        print("4. Exit")
+        choice = int(input("Enter your choice: "))
+
+        if choice == 1:
+            flight_id = input("Enter Flight ID: ")
+            flight = flight_table.search_by_id(flight_id)
+            if flight:
+                print("Flight Details:")
+                print("Flight ID:", flight.flight_id)
+                print("From:", flight.source)
+                print("To:", flight.destination)
+                print("Price:", flight.price)
+            else:
+                print("Flight not found.")
+        elif choice == 2:
+            source = input("Enter Source City: ")
+            flights = flight_table.search_by_source(source)
+            if flights:
+                print("Flights from", source)
+                for flight in flights:
+                    print(flight.flight_id, flight.destination, flight.price)
+            else:
+                print("No flights from", source)
+        elif choice == 3:
+            destination = input("Enter Destination City: ")
+            flights = flight_table.search_by_destination(destination)
+            if flights:
+                print("Flights to", destination)
+                for flight in flights:
+                    print(flight.flight_id, flight.source, flight.price)
+            else:
+                print("No flights to", destination)
+        elif choice == 4:
+            print("Exiting program.")
+            break
+        else:
+            print("Invalid choice. Please select a valid option.")
+
+if __name__ == "__main__":
+    main()
